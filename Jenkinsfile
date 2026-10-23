@@ -4,6 +4,7 @@ pipeline {
 
     environment {
         IMAGE = 'job-application-tracker-api'
+        DOCKER = 'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe'
     }
 
     stages {
@@ -31,7 +32,10 @@ pipeline {
 
         stage('Build Docker image') {
             steps {
-                bat 'docker build -t %IMAGE%:%BUILD_NUMBER% -t %IMAGE%:latest .'
+                bat '''
+                "%DOCKER%" --version
+                "%DOCKER%" build -t %IMAGE%:%BUILD_NUMBER% -t %IMAGE%:latest .
+                '''
             }
         }
 
@@ -45,7 +49,7 @@ pipeline {
                         echo No .env.example found; skipping environment file copy.
                     )
                 )
-                docker compose up -d --build
+                "%DOCKER%" compose up -d --build
                 '''
             }
         }
