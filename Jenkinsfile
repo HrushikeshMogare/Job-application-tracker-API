@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         IMAGE = 'job-application-tracker-api'
-        DOCKER = 'C:\\Users\\HP\\AppData\\Local\\Programs\\Docker\\Docker\\resources\\bin\\docker.exe'
+        DOCKER = 'C:\\Users\\HP\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
     }
 
     stages {
