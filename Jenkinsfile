@@ -57,7 +57,6 @@ pipeline {
                         echo No .env.example found; skipping environment file copy.
                     )
                 )
-
                 "%DOCKER%" compose up -d --build
                 '''
             }
@@ -68,7 +67,6 @@ pipeline {
         success {
             echo 'Pipeline completed successfully.'
         }
-
         failure {
             echo 'Pipeline failed. Check the first failing stage in the console output.'
         }
