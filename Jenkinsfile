@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         IMAGE = 'job-application-tracker-api'
-        DOCKER = 'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe'
+        DOCKER = 'C:\\Users\\HP\\AppData\\Local\\Programs\\Docker\\Docker\\resources\\bin\\docker.exe'
     }
 
     stages {
@@ -30,10 +30,18 @@ pipeline {
             }
         }
 
-        stage('Build Docker image') {
+        stage('Check Docker') {
             steps {
                 bat '''
                 "%DOCKER%" --version
+                "%DOCKER%" info
+                '''
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                bat '''
                 "%DOCKER%" build -t %IMAGE%:%BUILD_NUMBER% -t %IMAGE%:latest .
                 '''
             }
@@ -49,6 +57,7 @@ pipeline {
                         echo No .env.example found; skipping environment file copy.
                     )
                 )
+
                 "%DOCKER%" compose up -d --build
                 '''
             }
@@ -59,8 +68,9 @@ pipeline {
         success {
             echo 'Pipeline completed successfully.'
         }
+
         failure {
-            echo 'Pipeline failed. Check the stage logs above for the cause.'
+            echo 'Pipeline failed. Check the first failing stage in the console output.'
         }
     }
 }
