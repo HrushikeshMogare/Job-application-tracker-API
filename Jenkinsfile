@@ -4,7 +4,8 @@ pipeline {
 
     environment {
         IMAGE = 'job-application-tracker-api'
-        DOCKER = 'C:\\Users\\HP\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+        DOCKER = 'C:\\Users\\HP\\AppData\\Local\\Programs\\Docker\\Docker\\resources\\bin\\docker.exe'
+        DOCKER_CONFIG = 'C:\\Users\\HP\\.docker'
     }
 
     stages {
@@ -39,6 +40,17 @@ pipeline {
             }
         }
 
+        stage('Check Docker Compose') {
+            steps {
+                bat '''
+                echo Checking Docker Compose plugin...
+                "%DOCKER%" compose version
+                if errorlevel 1 exit /b 1
+                "%DOCKER%" compose ls
+                '''
+            }
+        }
+
         stage('Build Docker image') {
             steps {
                 bat '''
@@ -54,10 +66,15 @@ pipeline {
                     if exist .env.example (
                         copy .env.example .env
                     ) else (
-                        echo No .env.example found; skipping environment file copy.
+                        echo ERROR: .env.example was not found.
+                        exit /b 1
                     )
                 )
+
                 "%DOCKER%" compose up -d --build
+                if errorlevel 1 exit /b 1
+
+                "%DOCKER%" compose ps
                 '''
             }
         }
@@ -67,8 +84,9 @@ pipeline {
         success {
             echo 'Pipeline completed successfully.'
         }
+
         failure {
-            echo 'Pipeline failed. Check the first failing stage in the console output.'
+            echo 'Pipeline failed. Check the first failing stage in Console Output.'
         }
     }
 }
